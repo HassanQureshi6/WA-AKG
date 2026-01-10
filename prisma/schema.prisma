@@ -47,6 +47,7 @@ model User {
   
   sessions  Session[]
   webhooks  Webhook[]
+  notifications Notification[]
 }
 
 model Session {
@@ -241,4 +242,18 @@ model SystemConfig {
   timezone      String   @default("Asia/Jakarta")
   
   updatedAt     DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String   @db.Text
+  type      String   @default("INFO") // INFO, WARNING, SUCCESS, SYSTEM
+  read      Boolean  @default(false)
+  href      String?
+  
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

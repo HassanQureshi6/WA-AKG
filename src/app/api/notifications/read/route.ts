@@ -1,0 +1,34 @@
+
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+
+export async function POST(req: Request) {
+    const session = await auth();
+    if (!session?.user?.id) return new Response("Unauthorized", { status: 401 });
+
+    try {
+        const { ids } = await req.json(); // Array of notification IDs to mark as read
+
+        if (!ids || !Array.isArray(ids)) {
+             // If no IDs provided, mark ALL as read for this user?
+             // Let's support marking ALL if ids is not provided
+             await prisma.notification.updateMany({
+                 where: { userId: session.user.id, read: false },
+                 data: { read: true }
+             });
+        } else {
+             await prisma.notification.updateMany({
+                 where: { 
+                     userId: session.user.id,
+                     id: { in: ids }
+                 },
+                 data: { read: true }
+             });
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (e) {
+        return new Response("Error updating notifications", { status: 500 });
+    }
+}
