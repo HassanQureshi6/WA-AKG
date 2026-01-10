@@ -1,0 +1,83 @@
+import { prisma } from "@/lib/prisma";
+import { WhatsAppInstance } from "./instance";
+import { Server } from "socket.io";
+import { initScheduler } from "@/lib/cron";
+
+export class WhatsAppManager {
+    private static instance: WhatsAppManager;
+    private sessions: Map<string, WhatsAppInstance> = new Map();
+    public io: Server | null = null;
+    
+    private constructor() {
+        initScheduler();
+    }
+
+    public static getInstance(): WhatsAppManager {
+        if (!WhatsAppManager.instance) {
+            WhatsAppManager.instance = new WhatsAppManager();
+        }
+        return WhatsAppManager.instance;
+    }
+
+    setup(io: Server) {
+        this.io = io;
+    }
+
+    async loadSessions() {
+        if (!this.io) throw new Error("Socket.IO not initialized in WhatsAppManager");
+        const sessions = await prisma.session.findMany({
+            where: { status: { not: "LOGGED_OUT" } }
+        });
+
+        for (const session of sessions) {
+            const instance = new WhatsAppInstance(session.sessionId, session.userId, this.io);
+            this.sessions.set(session.sessionId, instance);
+            await instance.init();
+        }
+        console.log(`Loaded ${sessions.length} sessions.`);
+    }
+
+    async createSession(userId: string, name: string) {
+        if (!this.io) throw new Error("Socket.IO not initialized");
+        
+        // Generate a random session ID (or use cuid from DB)
+        // We create DB entry first to get ID? Or generate ID first?
+        // Let's generate a unique ID for baileys auth.
+        const sessionId = Math.random().toString(36).substring(7); // Simple random string
+
+        const session = await prisma.session.create({
+            data: {
+                userId,
+                name,
+                sessionId,
+                status: "DISCONNECTED"
+            }
+        });
+
+        const instance = new WhatsAppInstance(sessionId, userId, this.io);
+        this.sessions.set(sessionId, instance);
+        await instance.init();
+
+        return session;
+    }
+
+    public getInstance(sessionId: string) {
+        return this.sessions.get(sessionId);
+    }
+    
+    async deleteSession(sessionId: string) {
+        const instance = this.sessions.get(sessionId);
+        if (instance) {
+             // Logout/Close socket
+             instance.socket?.end(undefined);
+             this.sessions.delete(sessionId);
+        }
+        await prisma.session.delete({ where: { sessionId } });
+    }
+}
+
+const globalForWhatsapp = global as unknown as { waManager: WhatsAppManager };
+
+export const waManager = globalForWhatsapp.waManager || WhatsAppManager.getInstance();
+
+if (process.env.NODE_ENV !== "production") globalForWhatsapp.waManager = waManager;

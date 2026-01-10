@@ -1,0 +1,202 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPERADMIN
+  OWNER
+  STAFF
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  STICKER
+  LOCATION
+  CONTACT
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      Role     @default(OWNER)
+  apiKey    String?  @unique // API Key for authentication
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  sessions  Session[]
+  webhooks  Webhook[]
+}
+
+model Session {
+  id          String    @id @default(cuid())
+  userId      String
+  name        String    // e.g. "Marketing WA"
+  sessionId   String    @unique // The unique ID used for Baileys auth
+  status      String    @default("DISCONNECTED") // CONNECTED, DISCONNECTED, ZOMBIE
+  qr          String?   @db.Text
+  config      Json?     // Store instance specific config (e.g. "read_receipts": true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contacts    Contact[]
+  messages    Message[]
+  groups      Group[]
+  autoReplies AutoReply[]
+  stories     Story[]
+  scheduledMessages ScheduledMessage[]
+  webhooks    Webhook[]
+}
+
+model Contact {
+  id          String   @id @default(cuid())
+  sessionId   String
+  jid         String   // remoteJid (123456@s.whatsapp.net)
+  name        String?
+  notify      String?  // Pushname
+  profilePic  String?  @db.Text
+  data        Json?    // Detailed contact data
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  messages    Message[]
+
+  @@unique([sessionId, jid])
+}
+
+model Message {
+  id          String        @id @default(cuid())
+  sessionId   String
+  remoteJid   String        // Receiver or Group Jid
+  senderJid   String?       // If group, who sent it. If private, same as remoteJid (incoming) or me (outgoing)
+  fromMe      Boolean
+  keyId       String        // WhatsApp Message Key ID
+  pushName    String?
+  type        MessageType   @default(TEXT)
+  content     String?       @db.Text // Text content or Caption
+  mediaUrl    String?       @db.Text // Path to file if media
+  status      MessageStatus @default(PENDING)
+  timestamp   DateTime      @default(now())
+  
+  quoteId     String?       // For replies
+  
+  contactId   String?
+  contract    Contact?      @relation(fields: [contactId], references: [id])
+  session     Session       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, keyId])
+  @@index([sessionId, remoteJid])
+}
+
+model Group {
+  id          String   @id @default(cuid())
+  sessionId   String
+  jid         String
+  subject     String?
+  description String?  @db.Text
+  ownerJid    String?
+  participants Json?   // Stored as JSON for now: [{id: '123@s.whatsapp.net', admin: 'admin' | null}]
+  creation    DateTime?
+  restrict    Boolean? // Only admins can edit group info
+  announce    Boolean? // Only admins can send messages
+  
+  metadata    Json?    // Raw full metadata dump
+  
+  inviteCode  String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, jid])
+}
+
+model AutoReply {
+  id          String   @id @default(cuid())
+  sessionId   String
+  keyword     String
+  matchType   String   // EXACT, CONTAINS, REGEX
+  response    String   @db.Text
+  isMedia     Boolean  @default(false)
+  mediaUrl    String?
+  createdAt   DateTime @default(now())
+
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model Story {
+  id          String   @id @default(cuid())
+  sessionId   String
+  jid         String   // User who posted the story or Broadcast JID
+  content     String?  @db.Text
+  mediaUrl    String?  @db.Text
+  type        String   // IMAGE, VIDEO, TEXT
+  timestamp   DateTime @default(now())
+  viewed      Boolean  @default(false)
+
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model ScheduledMessage {
+  id          String   @id @default(cuid())
+  sessionId   String
+  jid         String
+  content     String   @db.Text
+  mediaUrl    String?
+  sendAt      DateTime
+  status      String   @default("PENDING") // PENDING, SENT, FAILED
+  createdAt   DateTime @default(now())
+
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+// Store for Baileys MultiFileAuthState (in DB)
+model AuthState {
+  id        String   @id @default(cuid())
+  sessionId String
+  key       String   // Filename/Key (creds.json, etc)
+  value     Json
+  
+  @@unique([sessionId, key])
+}
+
+// Webhook configuration for external event notifications
+model Webhook {
+  id          String   @id @default(cuid())
+  userId      String
+  sessionId   String?  // Optional: specific session, null = all sessions
+  name        String   // e.g. "My Server Webhook"
+  url         String   // The webhook endpoint URL
+  secret      String?  // Optional secret for HMAC signing
+  events      Json     // Array of event types: ["message.received", "message.sent", "connection.update", etc.]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session     Session? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
