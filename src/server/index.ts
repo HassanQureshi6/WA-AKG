@@ -6,8 +6,8 @@ import { setupSocket } from "./socket";
 import { waManager } from "../modules/whatsapp/manager";
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
-const port = 3030;
+const hostname = process.env.HOSTNAME || "localhost";
+const port = parseInt(process.env.PORT || "3030", 10);
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
