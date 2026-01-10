@@ -88,4 +88,5 @@ const globalForWhatsapp = global as unknown as { waManager: WhatsAppManager };
 
 export const waManager = globalForWhatsapp.waManager || WhatsAppManager.getInstance();
 
-if (process.env.NODE_ENV !== "production") globalForWhatsapp.waManager = waManager;
+// Always store in global to ensure singleton across Next.js compilations/chunks
+globalForWhatsapp.waManager = waManager;
