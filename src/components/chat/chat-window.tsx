@@ -15,6 +15,7 @@ interface Message {
     timestamp: string;
     type: string;
     status: string;
+    pushName?: string;
 }
 
 interface ChatWindowProps {
