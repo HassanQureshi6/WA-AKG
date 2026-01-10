@@ -1,9 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { waManager } from "./manager";
 
-export function startScheduler() {
-    console.log("Starting Message Scheduler...");
-    
 const checkScheduledMessages = async () => {
     try {
         const now = new Date();
@@ -67,5 +64,4 @@ export function startScheduler() {
 
     // Then run every 30 seconds
     setInterval(checkScheduledMessages, 30 * 1000); 
-}
 }
