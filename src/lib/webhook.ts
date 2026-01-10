@@ -145,10 +145,12 @@ async function sendWebhookRequest(url: string, payload: WebhookPayload, secret?:
  */
 export function onMessageReceived(sessionId: string, message: any) {
     const normalized = extractMessageContent(message);
+    const remoteJid = message.key?.remoteJid || "";
     
     dispatchWebhook(sessionId, "message.received", {
         keyId: message.key?.id,
-        remoteJid: message.key?.remoteJid,
+        remoteJid: remoteJid,
+        chatType: getChatType(remoteJid),
         fromMe: message.key?.fromMe || false,
         pushName: message.pushName,
         type: normalized.type,
@@ -164,15 +166,29 @@ export function onMessageReceived(sessionId: string, message: any) {
  */
 export function onMessageSent(sessionId: string, message: any) {
     const normalized = extractMessageContent(message);
+    const remoteJid = message.key?.remoteJid || "";
 
     dispatchWebhook(sessionId, "message.sent", {
         keyId: message.key?.id,
-        remoteJid: message.key?.remoteJid,
+        remoteJid: remoteJid,
+        chatType: getChatType(remoteJid),
         fromMe: true,
         type: normalized.type,
         content: normalized.content,
         timestamp: Date.now() // Sent now
     });
+}
+
+/**
+ * Determine chat type from JID
+ */
+function getChatType(jid: string): "PERSONAL" | "GROUP" | "STATUS" | "NEWSLETTER" | "UNKNOWN" {
+    if (!jid) return "UNKNOWN";
+    if (jid.endsWith("@g.us")) return "GROUP";
+    if (jid.endsWith("@s.whatsapp.net")) return "PERSONAL";
+    if (jid === "status@broadcast") return "STATUS";
+    if (jid.endsWith("@newsletter")) return "NEWSLETTER";
+    return "UNKNOWN";
 }
 
 /**

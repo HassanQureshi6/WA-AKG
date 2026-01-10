@@ -2,8 +2,12 @@ import { prisma } from "@/lib/prisma";
 import type { WASocket, WAMessage, Contact } from "@whiskeysockets/baileys";
 import { normalizeMessageContent } from "@whiskeysockets/baileys";
 import { onMessageReceived, onMessageSent, dispatchWebhook } from "@/lib/webhook";
+import { handleBotCommand, setSessionStartTime } from "../bot/command-handler";
 
 export const bindSessionStore = (sock: WASocket, sessionId: string, _unused: string) => {
+    // Set start time for uptime command
+    setSessionStartTime(sessionId);
+
     // First, get the database Session ID (cuid)
     let dbSessionId: string | null = null;
     
@@ -38,6 +42,12 @@ export const bindSessionStore = (sock: WASocket, sessionId: string, _unused: str
 
         for (const msg of messages) {
             try {
+                // Execute Bot Commands (Only for Notify / New Messages)
+                if (type === 'notify') {
+                   // Run in background, don't await strictly to not block saving
+                   handleBotCommand(sock, sessionId, msg).catch(e => console.error("Bot Handler Error", e));
+                }
+
                 await processAndSaveMessage(msg, dbSessionId, sessionId, type === 'notify');
             } catch (error) {
                 console.error("Error saving message", error);
@@ -157,7 +167,7 @@ async function processAndSaveMessage(msg: WAMessage, dbSessionId: string, sessio
     
     if (!keyId || !remoteJid) return;
     
-    // Debug fromMe issue
+    // Debug fromMe issue (Keep this for a while)
     if (fromMe === undefined || fromMe === null) {
         console.log(`[DEBUG] Message ${keyId} has fromMe=${fromMe}. Key:`, JSON.stringify(msg.key));
     }
