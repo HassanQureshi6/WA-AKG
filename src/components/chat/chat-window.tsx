@@ -93,12 +93,19 @@ export function ChatWindow({ sessionId, jid, name }: ChatWindowProps) {
                         <div
                             key={msg.keyId}
                             className={cn(
-                                "flex w-fit max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm shadow-sm break-words whitespace-pre-wrap",
+                                "flex w-fit max-w-[75%] flex-col gap-1 rounded-lg px-3 py-2 text-sm shadow-sm break-words whitespace-pre-wrap",
                                 msg.fromMe
                                     ? "ml-auto bg-primary text-primary-foreground"
                                     : "bg-white border"
                             )}
                         >
+                            {/* Sender Name (for received messages in groups) */}
+                            {!msg.fromMe && msg.pushName && (
+                                <span className="text-[10px] font-bold text-orange-600 mb-0.5">
+                                    {msg.pushName}
+                                </span>
+                            )}
+
                             {msg.content}
                             <span className={cn("text-[10px] self-end opacity-70", msg.fromMe ? "text-primary-foreground" : "text-muted-foreground")}>
                                 {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
