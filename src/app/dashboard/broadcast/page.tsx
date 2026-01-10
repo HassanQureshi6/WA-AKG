@@ -11,6 +11,7 @@ import { RefreshCw, Send, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { useSession } from "@/components/dashboard/session-provider";
+import { SessionGuard } from "@/components/dashboard/session-guard";
 
 export default function BroadcastPage() {
     const { sessionId } = useSession();
@@ -58,67 +59,71 @@ export default function BroadcastPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-bold tracking-tight">Broadcast / Blast</h2>
-            </div>
+    return (
+        <SessionGuard>
+            <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-3xl font-bold tracking-tight">Broadcast / Blast</h2>
+                </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Recipients</CardTitle>
-                        <CardDescription>Enter phone numbers separated by comma or new line.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Target Numbers (e.g., 628123456789)</Label>
-                            <Textarea
-                                placeholder="628123456789&#10;628987654321"
-                                className="min-h-[200px]"
-                                value={contacts}
-                                onChange={e => setContacts(e.target.value)}
-                            />
-                            <p className="text-xs text-muted-foreground">{contacts.split(/[\n,]+/).filter(Boolean).length} numbers identified</p>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Message Content</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Message</Label>
-                            <Textarea
-                                placeholder="Type your message here..."
-                                className="min-h-[150px]"
-                                value={message}
-                                onChange={e => setMessage(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="space-y-4 pt-4">
+                <div className="grid gap-6 md:grid-cols-2">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Recipients</CardTitle>
+                            <CardDescription>Enter phone numbers separated by comma or new line.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Delay (ms): {delay[0]}</Label>
-                                <Slider
-                                    defaultValue={[2000]}
-                                    max={10000}
-                                    step={100}
-                                    value={delay}
-                                    onValueChange={setDelay}
+                                <Label>Target Numbers (e.g., 628123456789)</Label>
+                                <Textarea
+                                    placeholder="628123456789&#10;628987654321"
+                                    className="min-h-[200px]"
+                                    value={contacts}
+                                    onChange={e => setContacts(e.target.value)}
                                 />
-                                <p className="text-xs text-muted-foreground">Randomized delay to prevent ban.</p>
+                                <p className="text-xs text-muted-foreground">{contacts.split(/[\n,]+/).filter(Boolean).length} numbers identified</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Message Content</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Message</Label>
+                                <Textarea
+                                    placeholder="Type your message here..."
+                                    className="min-h-[150px]"
+                                    value={message}
+                                    onChange={e => setMessage(e.target.value)}
+                                />
                             </div>
 
-                            <Button className="w-full" onClick={handleSend} disabled={loading || !sessionId}>
-                                {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                                Start Broadcast
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                            <div className="space-y-4 pt-4">
+                                <div className="space-y-2">
+                                    <Label>Delay (ms): {delay[0]}</Label>
+                                    <Slider
+                                        defaultValue={[2000]}
+                                        max={10000}
+                                        step={100}
+                                        value={delay}
+                                        onValueChange={setDelay}
+                                    />
+                                    <p className="text-xs text-muted-foreground">Randomized delay to prevent ban.</p>
+                                </div>
+
+                                <Button className="w-full" onClick={handleSend} disabled={loading || !sessionId}>
+                                    {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                    Start Broadcast
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
-        </div>
+        </SessionGuard>
+    );
     );
 }

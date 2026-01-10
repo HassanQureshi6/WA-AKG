@@ -9,6 +9,7 @@ import { RefreshCw, Send, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { useSession } from "@/components/dashboard/session-provider";
+import { SessionGuard } from "@/components/dashboard/session-guard";
 
 export default function StickerPage() {
     const { sessionId } = useSession();
@@ -50,43 +51,47 @@ export default function StickerPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-bold tracking-tight">Sticker Maker</h2>
+    return (
+        <SessionGuard>
+            <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-3xl font-bold tracking-tight">Sticker Maker</h2>
+                </div>
+
+                <Card className="max-w-md">
+                    <CardHeader>
+                        <CardTitle>Create & Send Sticker</CardTitle>
+                        <CardDescription>Upload an image to convert it into a WhatsApp sticker.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label>Target Number</Label>
+                            <Input
+                                placeholder="628123456789"
+                                value={target}
+                                onChange={e => setTarget(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Image File</Label>
+                            <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={e => setFile(e.target.files?.[0] || null)}
+                            />
+                        </div>
+
+                        <div className="pt-4">
+                            <Button className="w-full" onClick={handleSend} disabled={loading || !sessionId || !file}>
+                                {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                Send Sticker
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
-
-            <Card className="max-w-md">
-                <CardHeader>
-                    <CardTitle>Create & Send Sticker</CardTitle>
-                    <CardDescription>Upload an image to convert it into a WhatsApp sticker.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label>Target Number</Label>
-                        <Input
-                            placeholder="628123456789"
-                            value={target}
-                            onChange={e => setTarget(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label>Image File</Label>
-                        <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={e => setFile(e.target.files?.[0] || null)}
-                        />
-                    </div>
-
-                    <div className="pt-4">
-                        <Button className="w-full" onClick={handleSend} disabled={loading || !sessionId || !file}>
-                            {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                            Send Sticker
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+        </SessionGuard>
+    );
     );
 }
