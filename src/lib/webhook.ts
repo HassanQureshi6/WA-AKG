@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
 import crypto from "crypto";
+import { normalizeMessageContent } from "@whiskeysockets/baileys";
 
 // Event types that can trigger webhooks
 export type WebhookEventType = 
@@ -56,7 +57,7 @@ export async function dispatchWebhook(
             event,
             sessionId,
             timestamp: new Date().toISOString(),
-            data
+            data: normalizePayloadData(event, data) // Normalize data before sending
         };
 
         // Dispatch to all matching webhooks
@@ -78,10 +79,37 @@ export async function dispatchWebhook(
 }
 
 /**
+ * Normalize payload data to match API format and avoid Circular/BigInt errors
+ */
+function normalizePayloadData(event: WebhookEventType, data: any): any {
+    if (event === "message.received" || event === "message.sent") {
+        // If data is already simplified, return it
+        if (data.type && data.content) return data;
+
+        // If data is raw Baileys message (which we shouldn't be passing raw anymore, but just in case)
+        // Ideally the caller (onMessageReceived) should have already simplified it.
+        // But let's handle the specific fields passed by onMessageReceived below.
+        return data; 
+    }
+    return data;
+}
+
+/**
+ * JSON Replacer to handle BigInt
+ */
+function jsonReplacer(key: string, value: any) {
+    if (typeof value === 'bigint') {
+        return value.toString();
+    }
+    return value;
+}
+
+/**
  * Send HTTP POST request to webhook endpoint
  */
 async function sendWebhookRequest(url: string, payload: WebhookPayload, secret?: string | null) {
-    const body = JSON.stringify(payload);
+    // Use custom replacer for BigInt support
+    const body = JSON.stringify(payload, jsonReplacer);
     
     const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -113,15 +141,21 @@ async function sendWebhookRequest(url: string, payload: WebhookPayload, secret?:
 
 /**
  * Helper to dispatch message received event
+ * Normalizes message content to match API structure
  */
 export function onMessageReceived(sessionId: string, message: any) {
+    const normalized = extractMessageContent(message);
+    
     dispatchWebhook(sessionId, "message.received", {
         keyId: message.key?.id,
         remoteJid: message.key?.remoteJid,
-        fromMe: message.key?.fromMe,
+        fromMe: message.key?.fromMe || false,
         pushName: message.pushName,
-        content: message.message,
-        timestamp: message.messageTimestamp
+        type: normalized.type,
+        content: normalized.content,
+        timestamp: message.messageTimestamp 
+            ? Number(message.messageTimestamp) * 1000 
+            : Date.now()
     });
 }
 
@@ -129,11 +163,15 @@ export function onMessageReceived(sessionId: string, message: any) {
  * Helper to dispatch message sent event
  */
 export function onMessageSent(sessionId: string, message: any) {
+    const normalized = extractMessageContent(message);
+
     dispatchWebhook(sessionId, "message.sent", {
         keyId: message.key?.id,
         remoteJid: message.key?.remoteJid,
-        content: message.message,
-        timestamp: new Date().toISOString()
+        fromMe: true,
+        type: normalized.type,
+        content: normalized.content,
+        timestamp: Date.now() // Sent now
     });
 }
 
@@ -145,4 +183,42 @@ export function onConnectionUpdate(sessionId: string, status: string, qr?: strin
         status,
         qr: qr ? "QR_GENERATED" : null // Don't send actual QR, just indicator
     });
+}
+
+/**
+ * Extract content and type from Baileys message
+ */
+function extractMessageContent(msg: any): { type: string, content: string } {
+    const messageContent = normalizeMessageContent(msg.message);
+    let text = "";
+    let messageType = "TEXT";
+
+    if (!messageContent) return { type: "UNKNOWN", content: "" };
+
+    if (messageContent.conversation) {
+        text = messageContent.conversation;
+    } else if (messageContent.extendedTextMessage?.text) {
+        text = messageContent.extendedTextMessage.text;
+    } else if (messageContent.imageMessage) {
+        messageType = "IMAGE";
+        text = messageContent.imageMessage.caption || "";
+    } else if (messageContent.videoMessage) {
+        messageType = "VIDEO";
+        text = messageContent.videoMessage.caption || "";
+    } else if (messageContent.audioMessage) {
+        messageType = "AUDIO";
+    } else if (messageContent.documentMessage) {
+        messageType = "DOCUMENT";
+        text = messageContent.documentMessage.fileName || "";
+    } else if (messageContent.stickerMessage) {
+        messageType = "STICKER";
+    } else if (messageContent.locationMessage) {
+        messageType = "LOCATION";
+        text = `${messageContent.locationMessage.degreesLatitude},${messageContent.locationMessage.degreesLongitude}`;
+    } else if (messageContent.contactMessage) {
+        messageType = "CONTACT";
+        text = messageContent.contactMessage.displayName || "";
+    }
+
+    return { type: messageType, content: text };
 }

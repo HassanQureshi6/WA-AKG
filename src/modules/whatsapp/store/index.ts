@@ -156,6 +156,11 @@ async function processAndSaveMessage(msg: WAMessage, dbSessionId: string, sessio
         : new Date();
     
     if (!keyId || !remoteJid) return;
+    
+    // Debug fromMe issue
+    if (fromMe === undefined || fromMe === null) {
+        console.log(`[DEBUG] Message ${keyId} has fromMe=${fromMe}. Key:`, JSON.stringify(msg.key));
+    }
 
     const messageContent = normalizeMessageContent(msg.message);
     let text = "";
