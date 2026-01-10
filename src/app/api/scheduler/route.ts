@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUser, canAccessSession } from "@/lib/api-auth";
-
+import moment from "moment-timezone";
 
 // GET: List Scheduled Messages
 export async function GET(request: NextRequest) {
@@ -75,9 +75,7 @@ export async function POST(request: NextRequest) {
         }
 
 
-import moment from "moment-timezone";
 
-// ... inside POST
         // @ts-ignore
         const systemConfig = await prisma.systemConfig.findUnique({ where: { id: "default" } });
         const timezone = systemConfig?.timezone || "Asia/Jakarta";
