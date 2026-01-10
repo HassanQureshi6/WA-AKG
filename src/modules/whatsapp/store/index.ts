@@ -212,17 +212,30 @@ async function processAndSaveMessage(msg: WAMessage, dbSessionId: string, sessio
 
     // Ensure contact exists (Upsert Contact)
     if (remoteJid && !remoteJid.includes('@g.us') && !remoteJid.includes('status@broadcast')) {
+         const contactData: any = {
+             sessionId: dbSessionId,
+             jid: remoteJid
+         };
+
+         // Only update name/notify if message is FROM the contact (not from me)
+         if (!fromMe) {
+             if (pushName) contactData.notify = pushName;
+             if (pushName) contactData.name = pushName;
+         }
+
          await prisma.contact.upsert({
             where: { sessionId_jid: { sessionId: dbSessionId, jid: remoteJid } },
             create: {
                 sessionId: dbSessionId,
                 jid: remoteJid,
-                name: pushName || undefined,
-                notify: pushName
+                notify: !fromMe ? pushName : undefined,
+                name: !fromMe ? pushName : undefined
             },
-            update: {
-                notify: pushName
-            }
+            update: !fromMe ? {
+                notify: pushName,
+                // Only update name if it was null? Or always? Let's just update notify usually.
+                // But Baileys often sends name in pushName.
+            } : {}
         });
     }
 
