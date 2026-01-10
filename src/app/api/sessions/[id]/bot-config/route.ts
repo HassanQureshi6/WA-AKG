@@ -32,7 +32,10 @@ export async function GET(
         // Return config or default if null
         const config = session.botConfig || {
             enabled: true,
-            publicMode: false,
+            botMode: 'OWNER',
+            botAllowedJids: [],
+            autoReplyMode: 'ALL',
+            autoReplyAllowedJids: [],
             enableSticker: true,
             enablePing: true,
             enableUptime: true,
@@ -76,15 +79,22 @@ export async function POST(
             create: {
                 sessionId: session.id,
                 enabled: body.enabled ?? true,
-                publicMode: body.publicMode ?? false,
+                botMode: body.botMode || 'OWNER',
+                botAllowedJids: body.botAllowedJids || [],
+                autoReplyMode: body.autoReplyMode || 'ALL',
+                autoReplyAllowedJids: body.autoReplyAllowedJids || [],
+                
                 enableSticker: body.enableSticker ?? true,
                 enablePing: body.enablePing ?? true,
                 enableUptime: body.enableUptime ?? true,
                 removeBgApiKey: body.removeBgApiKey || null,
             },
             update: {
-                enabled: body.enabled,
-                publicMode: body.publicMode,
+                botMode: body.botMode || 'OWNER',
+                botAllowedJids: body.botAllowedJids || [],
+                autoReplyMode: body.autoReplyMode || 'ALL',
+                autoReplyAllowedJids: body.autoReplyAllowedJids || [],
+                
                 enableSticker: body.enableSticker,
                 enablePing: body.enablePing,
                 enableUptime: body.enableUptime,

@@ -263,3 +263,4 @@ async function processAndSaveMessage(msg: WAMessage, dbSessionId: string, sessio
         }
     }
 }
+// Placeholder - verified that I need to find the logic first

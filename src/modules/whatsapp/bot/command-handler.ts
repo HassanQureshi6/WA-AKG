@@ -7,9 +7,13 @@ import Sticker from "wa-sticker-formatter";
 const startTimes = new Map<string, number>();
 
 // Default bot config
+// Default bot config
 const DEFAULT_CONFIG = {
     enabled: true,
-    publicMode: false,
+    botMode: 'OWNER',
+    botAllowedJids: [] as string[],
+    autoReplyMode: 'ALL',
+    autoReplyAllowedJids: [] as string[],
     enableSticker: true,
     enablePing: true,
     enableUptime: true,
@@ -66,11 +70,31 @@ export async function handleBotCommand(
 
     if (!config.enabled) return;
     
-    // Public Mode Check:
-    // If publicMode is FALSE, ONLY the owner (fromMe) can use it.
-    if (!config.publicMode && !fromMe) {
-        return;
+    // Verify Access Permissions
+    const botMode = (config as any).botMode || 'OWNER'; // Default to OWNER if missing
+    
+    // Check Permission
+    let canExecute = false;
+
+    if (fromMe) {
+        canExecute = true; // Owner always allowed
+    } else {
+        if (botMode === 'ALL') {
+            canExecute = true;
+        } else if (botMode === 'SPECIFIC') {
+            const allowedJids = (config as any).botAllowedJids || [];
+            // Handle JID formats (ensure comparison is clean)
+            const senderJid = msg.key.participant || msg.key.remoteJid || "";
+            // Check if senderJid is in allowed list (checking substrings or bare JIDs)
+            if (Array.isArray(allowedJids)) {
+                // Simple check: does allowedJids include the clean JID?
+                // Usually JIDs are like 12345@s.whatsapp.net
+                canExecute = allowedJids.some(jid => senderJid.includes(jid));
+            }
+        }
     }
+
+    if (!canExecute) return;
 
     const [command, ...args] = text.trim().split(" ");
     const cmd = command.toLowerCase().slice(1); // remove #
