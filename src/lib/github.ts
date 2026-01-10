@@ -1,15 +1,20 @@
 
 export async function getLatestRelease(owner: string, repo: string) {
     try {
-        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`, {
+        const url = `https://api.github.com/repos/${owner}/${repo}/releases/latest`;
+        const res = await fetch(url, {
             headers: {
                 "Accept": "application/vnd.github+json",
                 "User-Agent": "WA-AKG-System"
             },
-            next: { revalidate: 3600 } // Cache for 1 hour
+            cache: 'no-store' // Disable cache for debugging
         });
         
-        if (!res.ok) return null;
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error(`GitHub API Error: ${res.status} ${res.statusText} - ${errorText}`);
+            return null;
+        }
         
         const data = await res.json();
         return {
