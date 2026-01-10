@@ -1,16 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "@/components/dashboard/session-provider";
+import { useSession as useSessionProvider } from "@/components/dashboard/session-provider";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { RefreshCw, Save } from "lucide-react";
+import { RefreshCw, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
-    const { sessionId } = useSession();
+    const { sessionId } = useSessionProvider();
+    const { data: session } = useSession();
+    const isSuperAdmin = (session?.user as any)?.role === "SUPERADMIN";
+
     const [config, setConfig] = useState({
         ghostMode: false,
         antiDelete: false,
@@ -87,8 +91,23 @@ export default function SettingsPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
-
             </div>
+
+            {!isSuperAdmin && (
+                <Card className="border-yellow-200 bg-yellow-50">
+                    <CardContent className="pt-6">
+                        <div className="flex items-start gap-3">
+                            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-medium text-yellow-900">View Only Mode</p>
+                                <p className="text-xs text-yellow-700 mt-1">
+                                    Only Superadmins can modify system settings. You can view current settings but cannot make changes.
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* System Configuration (Global) */}
             <Card className="border-primary/20 bg-primary/5">
@@ -105,6 +124,7 @@ export default function SettingsPage() {
                                 placeholder="WA-AKG"
                                 value={systemConfig.appName}
                                 onChange={(e) => setSystemConfig(prev => ({ ...prev, appName: e.target.value }))}
+                                disabled={!isSuperAdmin}
                             />
                         </div>
                         <p className="text-xs text-muted-foreground">Changes the name in the sidebar and browser title.</p>
@@ -117,13 +137,14 @@ export default function SettingsPage() {
                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 value={systemConfig.timezone}
                                 onChange={(e) => setSystemConfig(prev => ({ ...prev, timezone: e.target.value }))}
+                                disabled={!isSuperAdmin}
                             >
                                 <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
                                 <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
                                 <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
                                 <option value="UTC">UTC</option>
                             </select>
-                            <Button onClick={handleSaveSystem} disabled={systemLoading}>
+                            <Button onClick={handleSaveSystem} disabled={systemLoading || !isSuperAdmin}>
                                 {systemLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                             </Button>
                         </div>
