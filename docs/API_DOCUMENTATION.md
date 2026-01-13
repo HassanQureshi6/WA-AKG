@@ -2,8 +2,8 @@
 
 This document provides a complete reference for the WA-AKG REST API.
 
-**Base URL**: `http://localhost:3000` (Default)
-**Production URL**: `https://wa-akg.aikeigroup.net`
+**Base URL**: `http://localhost:3000` (Local)
+**Production URL**: `https://wa-akg-dev.aikeigroup.net`
 > **Note**: For Production, replace `localhost:3000` with the production domain.
 
 ## 🔐 Authentication
@@ -101,7 +101,32 @@ Logout and remove the session data.
 
 ---
 
-## 💬 Chat
+## 💬 Chat & Messages
+
+### Get Chat List
+`GET /api/chat/[sessionId]`
+
+Get list of contacts with their last message, sorted by most recent.
+
+**Response:**
+```json
+[
+  {
+    "jid": "62812345678@s.whatsapp.net",
+    "name": "John Doe",
+    "lastMessage": {
+      "content": "Hello",
+      "timestamp": "2024-01-01T12:00:00Z",
+      "type": "text"
+    }
+  }
+]
+```
+
+### Get Messages (Chat History)
+`GET /api/chat/[sessionId]/[jid]`
+
+Retrieve stored messages for a specific contact. `jid` must be URL-encoded.
 
 ### Send Message
 `POST /api/chat/send`
@@ -118,32 +143,41 @@ Send a text message to a contact or group.
   }
 }
 ```
-*Note: `message` object follows Baileys `AnyMessageContent` structure.*
 
-### Get Messages
-`GET /api/chat/[sessionId]/[jid]`
+### Send Sticker
+`POST /api/messages/sticker`
 
-Retrieve stored messages for a chat. `jid` must be URL-encoded.
+Send a sticker (image converted to Sticker).
+
+**FormData:**
+- `sessionId`: "marketing-1"
+- `jid`: "62812345678@s.whatsapp.net"
+- `file`: (Binary File - Image)
+
+### Spam / Bulk Send
+`POST /api/messages/spam`
+
+Send multiple messages rapidly (Use with caution).
+
+**Body:**
+```json
+{
+  "sessionId": "marketing-1",
+  "jid": "62812345678@s.whatsapp.net",
+  "message": "Spam Test",
+  "count": 10,
+  "delay": 500 // milliseconds
+}
+```
 
 ---
 
-## 👥 Groups
+## 📢 Broadcast & Groups
 
 ### List Groups
 `GET /api/groups?sessionId=[sessionId]`
 
 Get a list of groups for a specific session.
-
-**Response:**
-```json
-[
-  {
-    "id": "123@g.us",
-    "subject": "Community",
-    "size": 10
-  }
-]
-```
 
 ### Create Group
 `POST /api/groups/create`
@@ -156,10 +190,6 @@ Get a list of groups for a specific session.
   "participants": ["62812345678@s.whatsapp.net", "62898765432@s.whatsapp.net"]
 }
 ```
-
----
-
-## 📢 Broadcast
 
 ### Send Broadcast
 `POST /api/messages/broadcast`
@@ -176,6 +206,56 @@ Send a message to multiple recipients with random delays (anti-ban).
   ],
   "message": "Promo content here...",
   "delay": 10000 // Base delay in ms (optional, default handled by server)
+}
+```
+
+---
+
+## 📸 Status / Stories
+
+### Update Status
+`POST /api/status/update`
+
+Post a text, image, or video to WhatsApp Status.
+
+**Body (Text):**
+```json
+{
+  "sessionId": "marketing-1",
+  "content": "Hello Status!",
+  "type": "TEXT",
+  "backgroundColor": 4278190335, // Optional ARGB
+  "font": 1 // Optional
+}
+```
+
+**Body (Image/Video):**
+```json
+{
+  "sessionId": "marketing-1",
+  "content": "Caption here", // Caption
+  "type": "IMAGE", // or VIDEO
+  "mediaUrl": "https://example.com/image.jpg"
+}
+```
+
+---
+
+## 📅 Scheduler
+
+### List Scheduled Messages
+`GET /api/scheduler?sessionId=[sessionId]`
+
+### Create Scheduled Message
+`POST /api/scheduler`
+
+**Body:**
+```json
+{
+  "sessionId": "marketing-1",
+  "jid": "62812345678@s.whatsapp.net",
+  "content": "Good morning!",
+  "sendAt": "2024-01-02T08:00" // Local time format (YYYY-MM-DDTHH:mm)
 }
 ```
 
@@ -225,56 +305,44 @@ Send a message to multiple recipients with random delays (anti-ban).
 ### Update Webhook
 `PATCH /api/webhooks/[id]`
 
-**Body:**
-```json
-{
-  "isActive": false,
-  "events": ["message.received"]
-}
-```
-
 ### Delete Webhook
 `DELETE /api/webhooks/[id]`
 
 ---
 
-## 🔔 Notifications
+## ⚙️ System & Users (Superadmin)
 
-### List Notifications
-`GET /api/notifications`
+### List Users
+`GET /api/users`
 
-Request must be authenticated. Returns notifications for the user.
-
-### Send Notification (Superadmin Only)
-`POST /api/notifications`
-
-**Body (Broadcast):**
-```json
-{
-  "broadcast": true,
-  "title": "System Alert",
-  "message": "Maintenance in 1 hour",
-  "type": "WARNING"
-}
-```
-
-**Body (Target User):**
-```json
-{
-  "targetUserId": "user-uuid",
-  "title": "Hello",
-  "message": "Welcome!",
-  "type": "INFO"
-}
-```
-
-### Mark Read
-`PATCH /api/notifications/read`
+### Create User
+`POST /api/users`
 
 **Body:**
 ```json
-{ "ids": ["notif-1", "notif-2"] } // omit "ids" to mark all as read
+{
+  "name": "New User",
+  "email": "user@example.com",
+  "password": "password123",
+  "role": "OWNER"
+}
 ```
 
-### Delete Notification
-`DELETE /api/notifications/delete?id=[id]`
+### Update/Delete User
+- `PATCH /api/users/[id]`
+- `DELETE /api/users/[id]`
+
+### System Config
+`GET /api/settings/system`
+
+### Update System Config
+`POST /api/settings/system`
+
+**Body:**
+```json
+{
+  "appName": "My WA Gateway",
+  "logoUrl": "...",
+  "timezone": "Asia/Jakarta"
+}
+```

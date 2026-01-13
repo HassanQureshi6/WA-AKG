@@ -1,32 +1,34 @@
 #!/bin/bash
 
 API_KEY="wag_TESTAPIKEY123"
-BASE_URL="https://wa-akg.aikeigroup.net/api"
+# Production/Dev URL
+BASE_URL="https://wa-akg-dev.aikeigroup.net/api"
 
-echo "Testing APIs with Key: $API_KEY"
+echo "Testing APIs against: $BASE_URL"
+echo "Using API Key: $API_KEY"
+
+# Helper function for separator
+sep() { echo -e "\n\n--------------------------------------------\n$1"; }
 
 # 1. List Sessions
-echo -e "\n1. GET /sessions"
+sep "1. GET /sessions"
 curl -s -X GET "$BASE_URL/sessions" \
   -H "x-api-key: $API_KEY" | head -c 500
-echo "..."
 
-# 2. Create Session
-echo -e "\n\n2. POST /sessions"
+# 2. Create Session (Update: sessionId is optional)
+sep "2. POST /sessions"
 curl -s -X POST "$BASE_URL/sessions" \
   -H "x-api-key: $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"name": "API Test Session", "sessionId": "api-test-1"}' | head -c 500
-echo "..."
 
-# 3. List Groups (for api-test-1)
-echo -e "\n\n3. GET /groups/api-test-1"
-curl -s -X GET "$BASE_URL/groups/api-test-1" \
+# 3. List Groups (Using query param per new format, though route supports both)
+sep "3. GET /groups?sessionId=api-test-1"
+curl -s -X GET "$BASE_URL/groups?sessionId=api-test-1" \
   -H "x-api-key: $API_KEY" | head -c 500
-echo "..."
 
 # 4. Create Auto Reply
-echo -e "\n\n4. POST /autoreplies"
+sep "4. POST /autoreplies"
 curl -s -X POST "$BASE_URL/autoreplies" \
   -H "x-api-key: $API_KEY" \
   -H "Content-Type: application/json" \
@@ -36,30 +38,39 @@ curl -s -X POST "$BASE_URL/autoreplies" \
     "response": "pong",
     "matchType": "EXACT"
   }' | head -c 500
-echo "..."
 
-# 5. Create Webhook
-echo -e "\n\n5. POST /webhooks"
+# 5. Create Webhook (with Session ID)
+sep "5. POST /webhooks"
 curl -s -X POST "$BASE_URL/webhooks" \
   -H "x-api-key: $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Test Webhook",
     "url": "https://example.com/webhook",
-    "events": ["message.upsert"]
+    "events": ["message.upsert"],
+    "sessionId": "api-test-1"
   }' | head -c 500
-echo "..."
 
-# 6. Send Message (Dry run - won't actually send if session not connected to WA, but DB should accept it or error)
-echo -e "\n\n6. POST /chat/send"
-curl -s -X POST "$BASE_URL/chat/send" \
+# 6. Post Status (New Endpoint)
+sep "6. POST /status/update"
+curl -s -X POST "$BASE_URL/status/update" \
   -H "x-api-key: $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "sessionId": "api-test-1",
-    "jid": "62899999999@s.whatsapp.net",
-    "message": { "text": "Hello from API test" }
+    "content": "Hello via API",
+    "type": "TEXT",
+    "backgroundColor": 4294901760 
   }' | head -c 500
-echo "..."
+
+# 7. Scheduler List (New Endpoint)
+sep "7. GET /scheduler"
+curl -s -X GET "$BASE_URL/scheduler?sessionId=api-test-1" \
+  -H "x-api-key: $API_KEY" | head -c 500
+
+# 8. Check System Updates (Admin)
+sep "8. POST /system/check-updates"
+curl -s -X POST "$BASE_URL/system/check-updates" \
+  -H "x-api-key: $API_KEY" | head -c 500
 
 echo -e "\n\nDone."
